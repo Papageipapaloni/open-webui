@@ -42,11 +42,51 @@
 		}
 	};
 
-	const confirmHandler = async () => {
+	/*const confirmHandler = async () => {
 		show = false;
 		await onConfirm();
 		dispatch('confirm', inputValue);
+	};*/
+
+	/*const confirmHandler = async () => {
+		// Beispiel 1: Leite IMMER auf die Umfrage weiter (hardcodiert)
+		// window.open("https://deine-umfrage-url.de", "_blank");
+
+		// Beispiel 2: Leite nur weiter, wenn message die Umfrage-URL enthält
+		const match = message.match(/https?:\/\/[^\s)]+/);
+		if (match) {
+			window.open(match[0], "_blank");
+		}*/
+
+	const confirmHandler = async () => {
+    // == 1. AUTOSWITCH zu Bot B ==
+    if (message && message.includes('[[AUTOSWITCH_BOT_B')) {
+        // Modellnamen extrahieren
+        const match = message.match(/\[\[AUTOSWITCH_BOT_B:([a-zA-Z0-9\-_]+)\]\]/);
+        let nextModel = 'gemma3:12b'; // Fallback
+        if (match) {
+            nextModel = match[1];
+        }
+        // Event an Elternkomponente/Chat schicken!
+        dispatch('autoswitch', { nextModel });
+    }
+
+    // == 2. Survey-Link automatisch öffnen ==
+    if (message && message.includes('[[GOTO_SURVEY:')) {
+        const match = message.match(/\[\[GOTO_SURVEY:(https?:\/\/[^\]]+)\]\]/);
+        if (match) {
+            window.open(match[1], "_blank");
+        }
+    }
+
+    show = false;
+    await onConfirm();
+    dispatch('confirm', inputValue);
 	};
+
+
+
+
 
 	onMount(() => {
 		mounted = true;

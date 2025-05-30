@@ -1977,7 +1977,7 @@
 
 <audio id="audioElement" src="" style="display: none;" />
 
-<EventConfirmDialog
+<!-- <EventConfirmDialog
 	bind:show={showEventConfirmation}
 	title={eventConfirmationTitle}
 	message={eventConfirmationMessage}
@@ -1994,6 +1994,33 @@
 	on:cancel={() => {
 		eventCallback(false);
 	}}
+/> -->
+
+<EventConfirmDialog
+  bind:show={showEventConfirmation}
+  title={eventConfirmationTitle}
+  message={eventConfirmationMessage}
+  input={eventConfirmationInput}
+  inputPlaceholder={eventConfirmationInputPlaceholder}
+  inputValue={eventConfirmationInputValue}
+  on:confirm={(e) => {
+    if (e.detail) {
+      eventCallback(e.detail);
+    } else {
+      eventCallback(true);
+    }
+  }}
+  on:cancel={() => {
+    eventCallback(false);
+  }}
+let forceBotB = false;
+  on:autoswitch={(e) => {
+    const nextModel = e.detail?.nextModel ?? "gemma3:12b";
+
+    sessionStorage.selectedModels = JSON.stringify([nextModel]);
+
+    initNewChat();
+}}
 />
 
 <div
