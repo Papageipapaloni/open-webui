@@ -58,11 +58,14 @@
 			window.open(match[0], "_blank");
 		}*/
 
+	
+	// Version V2
 	const confirmHandler = async () => {
     // == 1. AUTOSWITCH zu Bot B ==
     if (message && message.includes('[[AUTOSWITCH_BOT_B')) {
         // Modellnamen extrahieren
-        const match = message.match(/\[\[AUTOSWITCH_BOT_B:([a-zA-Z0-9\-_]+)\]\]/);
+        const match = message.match(/\[\[AUTOSWITCH_BOT_B:([^\]]+)\]\]/);
+
         let nextModel = 'gemma3:12b'; // Fallback
         if (match) {
             nextModel = match[1];
@@ -84,6 +87,7 @@
     dispatch('confirm', inputValue);
 	};
 
+	
 
 
 
