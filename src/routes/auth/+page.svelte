@@ -1,4 +1,5 @@
 <script>
+	import { browser } from '$app/environment';
 	import { toast } from 'svelte-sonner';
 
 	import { onMount, getContext, tick } from 'svelte';
@@ -15,6 +16,7 @@
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import OnBoarding from '$lib/components/OnBoarding.svelte';
+	import LoginPrompt from '$lib/components/LoginPrompt.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -27,8 +29,11 @@
 	let password = '';
 
 	let ldapUsername = '';
+	// Set this to true to show the prompt initially
+	let showPrompt = true;
 
 	const querystringValue = (key) => {
+		if (!browser) return null;
 		const querystring = window.location.search;
 		const urlParams = new URLSearchParams(querystring);
 		return urlParams.get(key);
@@ -147,12 +152,20 @@
 		loaded = true;
 		setLogoImage();
 
+		// Show the prompt if needed - you can adjust this condition as required
+		showPrompt = true; 
+
 		if (($config?.features.auth_trusted_header ?? false) || $config?.features.auth === false) {
 			await signInHandler();
 		} else {
 			onboarding = $config?.onboarding ?? false;
 		}
 	});
+
+	function handlePromptClose() {
+    showPrompt = false;
+	mode = 'signup'; // <--- Wechselt auf Registrieren!
+  	}
 </script>
 
 <svelte:head>
@@ -161,13 +174,16 @@
 	</title>
 </svelte:head>
 
-<OnBoarding
-	bind:show={onboarding}
-	getStartedHandler={() => {
-		onboarding = false;
-		mode = $config?.features.enable_ldap ? 'ldap' : 'signup';
-	}}
-/>
+{#if browser && showPrompt}
+  <LoginPrompt on:close={handlePromptClose} />
+{:else}
+  <OnBoarding
+    bind:show={onboarding}
+    getStartedHandler={() => {
+      onboarding = false;
+      mode = $config?.features.enable_ldap ? 'ldap' : 'signup';
+    }}
+  />
 
 <div class="w-full h-screen max-h-[100dvh] text-white relative">
 	<div class="w-full h-full absolute top-0 left-0 bg-white dark:bg-black"></div>
@@ -492,3 +508,4 @@
 		</div>
 	{/if}
 </div>
+{/if}
