@@ -90,6 +90,7 @@
 	import NotificationToast from '../NotificationToast.svelte';
 	import Spinner from '../common/Spinner.svelte';
 	import { fade } from 'svelte/transition';
+	import MessageCounter from '$lib/components/chat/MessageCounter.svelte';
 
 	export let chatIdProp = '';
 
@@ -279,7 +280,7 @@
 		if (event.chat_id === $chatId) {
 			await tick();
 			let message = history.messages[event.message_id];
-
+			
 			if (message) {
 				const type = event?.data?.type ?? null;
 				const data = event?.data?.data ?? null;
@@ -1642,23 +1643,23 @@
 				tool_servers: $toolServers,
 
 				features: {
-					image_generation:
-						$config?.features?.enable_image_generation &&
-						($user?.role === 'admin' || $user?.permissions?.features?.image_generation)
-							? imageGenerationEnabled
-							: false,
-					code_interpreter:
-						$config?.features?.enable_code_interpreter &&
-						($user?.role === 'admin' || $user?.permissions?.features?.code_interpreter)
-							? codeInterpreterEnabled
-							: false,
-					web_search:
-						$config?.features?.enable_web_search &&
-						($user?.role === 'admin' || $user?.permissions?.features?.web_search)
-							? webSearchEnabled || ($settings?.webSearch ?? false) === 'always'
-							: false,
-					memory: $settings?.memory ?? false
-				},
+						image_generation:
+							$config?.features?.enable_image_generation &&
+							($user?.role === 'admin' || $user?.permissions?.features?.image_generation)
+								? imageGenerationEnabled
+								: false,
+						code_interpreter:
+							$config?.features?.enable_code_interpreter &&
+							($user?.role === 'admin' || $user?.permissions?.features?.code_interpreter)
+								? codeInterpreterEnabled
+								: false,
+						web_search:
+							$config?.features?.enable_web_search &&
+							($user?.role === 'admin' || $user?.permissions?.features?.web_search)
+								? webSearchEnabled || ($settings?.webSearch ?? false) === 'always'
+								: false,
+						memory: $settings?.memory ?? false
+					},
 				variables: {
 					...getPromptVariables(
 						$user?.name,
@@ -2013,7 +2014,6 @@
   on:cancel={() => {
     eventCallback(false);
   }}
-let forceBotB = false;
   on:autoswitch={(e) => {
     const nextModel = e.detail?.nextModel ?? "gemma3:12b";
 
@@ -2067,135 +2067,135 @@ let forceBotB = false;
 					/>
 
 					<div class="flex flex-col flex-auto z-10 w-full @container">
-						{#if $settings?.landingPageMode === 'chat' || createMessagesList(history, history.currentId).length > 0}
-							<div
-								class=" pb-2.5 flex flex-col justify-between w-full flex-auto overflow-auto h-0 max-w-full z-10 scrollbar-hidden"
-								id="messages-container"
-								bind:this={messagesContainerElement}
-								on:scroll={(e) => {
-									autoScroll =
-										messagesContainerElement.scrollHeight - messagesContainerElement.scrollTop <=
-										messagesContainerElement.clientHeight + 5;
-								}}
-							>
-								<div class=" h-full w-full flex flex-col">
-									<Messages
-										chatId={$chatId}
-										bind:history
-										bind:autoScroll
-										bind:prompt
-										{selectedModels}
-										{atSelectedModel}
-										{sendPrompt}
-										{showMessage}
-										{submitMessage}
-										{continueResponse}
-										{regenerateResponse}
-										{mergeResponses}
-										{chatActionHandler}
-										{addMessages}
-										bottomPadding={files.length > 0}
-									/>
-								</div>
-							</div>
+			{#if $settings?.landingPageMode === 'chat' || createMessagesList(history, history.currentId).length > 0}
+				<div
+					class=" pb-2.5 flex flex-col justify-between w-full flex-auto overflow-auto h-0 max-w-full z-10 scrollbar-hidden"
+					id="messages-container"
+					bind:this={messagesContainerElement}
+					on:scroll={(e) => {
+						autoScroll =
+							messagesContainerElement.scrollHeight - messagesContainerElement.scrollTop <=
+							messagesContainerElement.clientHeight + 5;
+					}}
+				>
+					<div class=" h-full w-full flex flex-col">
+						<Messages
+							chatId={$chatId}
+							bind:history
+							bind:autoScroll
+							bind:prompt
+							{selectedModels}
+							{atSelectedModel}
+							{sendPrompt}
+							{showMessage}
+							{submitMessage}
+							{continueResponse}
+							{regenerateResponse}
+							{mergeResponses}
+							{chatActionHandler}
+							{addMessages}
+							bottomPadding={files.length > 0}
+						/>
+					</div>
+				</div>
 
-							<div class=" pb-[1rem]">
-								<MessageInput
-									{history}
-									{taskIds}
-									{selectedModels}
-									bind:files
-									bind:prompt
-									bind:autoScroll
-									bind:selectedToolIds
-									bind:selectedFilterIds
-									bind:imageGenerationEnabled
-									bind:codeInterpreterEnabled
-									bind:webSearchEnabled
-									bind:atSelectedModel
-									toolServers={$toolServers}
-									transparentBackground={$settings?.backgroundImageUrl ?? false}
-									{stopResponse}
-									{createMessagePair}
-									onChange={(input) => {
-										if (input.prompt !== null) {
-											localStorage.setItem(
-												`chat-input${$chatId ? `-${$chatId}` : ''}`,
-												JSON.stringify(input)
-											);
-										} else {
-											localStorage.removeItem(`chat-input${$chatId ? `-${$chatId}` : ''}`);
-										}
-									}}
-									on:upload={async (e) => {
-										const { type, data } = e.detail;
+				<div class=" pb-[1rem]">
+					<MessageInput
+						{history}
+						{taskIds}
+						{selectedModels}
+						bind:files
+						bind:prompt
+						bind:autoScroll
+						bind:selectedToolIds
+						bind:selectedFilterIds
+						bind:imageGenerationEnabled
+						bind:codeInterpreterEnabled
+						bind:webSearchEnabled
+						bind:atSelectedModel
+						toolServers={$toolServers}
+						transparentBackground={$settings?.backgroundImageUrl ?? false}
+						{stopResponse}
+						{createMessagePair}
+						onChange={(input) => {
+							if (input.prompt !== null) {
+								localStorage.setItem(
+									`chat-input${$chatId ? `-${$chatId}` : ''}`,
+									JSON.stringify(input)
+								);
+							} else {
+								localStorage.removeItem(`chat-input${$chatId ? `-${$chatId}` : ''}`);
+							}
+						}}
+						on:upload={async (e) => {
+							const { type, data } = e.detail;
 
-										if (type === 'web') {
-											await uploadWeb(data);
-										} else if (type === 'youtube') {
-											await uploadYoutubeTranscription(data);
-										} else if (type === 'google-drive') {
-											await uploadGoogleDriveFile(data);
-										}
-									}}
-									on:submit={async (e) => {
-										if (e.detail || files.length > 0) {
-											await tick();
-											submitPrompt(
-												($settings?.richTextInput ?? true)
-													? e.detail.replaceAll('\n\n', '\n')
-													: e.detail
-											);
-										}
-									}}
-								/>
+							if (type === 'web') {
+								await uploadWeb(data);
+							} else if (type === 'youtube') {
+								await uploadYoutubeTranscription(data);
+							} else if (type === 'google-drive') {
+								await uploadGoogleDriveFile(data);
+							}
+						}}
+						on:submit={async (e) => {
+							if (e.detail || files.length > 0) {
+								await tick();
+								submitPrompt(
+									($settings?.richTextInput ?? true)
+										? e.detail.replaceAll('\n\n', '\n')
+										: e.detail
+								);
+							}
+						}}
+					/>
 
-								<div
-									class="absolute bottom-1 text-xs text-gray-500 text-center line-clamp-1 right-0 left-0"
-								>
-									<!-- {$i18n.t('LLMs can make mistakes. Verify important information.')} -->
-								</div>
-							</div>
-						{:else}
-							<div class="overflow-auto w-full h-full flex items-center">
-								<Placeholder
-									{history}
-									{selectedModels}
-									bind:files
-									bind:prompt
-									bind:autoScroll
-									bind:selectedToolIds
-									bind:selectedFilterIds
-									bind:imageGenerationEnabled
-									bind:codeInterpreterEnabled
-									bind:webSearchEnabled
-									bind:atSelectedModel
-									transparentBackground={$settings?.backgroundImageUrl ?? false}
-									toolServers={$toolServers}
-									{stopResponse}
-									{createMessagePair}
-									on:upload={async (e) => {
-										const { type, data } = e.detail;
+					<div
+						class="absolute bottom-1 text-xs text-gray-500 text-center line-clamp-1 right-0 left-0"
+					>
+						<!-- {$i18n.t('LLMs can make mistakes. Verify important information.')} -->
+					</div>
+				</div>
+			{:else}
+				<div class="overflow-auto w-full h-full flex items-center">
+					<Placeholder
+						{history}
+						{selectedModels}
+						bind:files
+						bind:prompt
+						bind:autoScroll
+						bind:selectedToolIds
+						bind:selectedFilterIds
+						bind:imageGenerationEnabled
+						bind:codeInterpreterEnabled
+						bind:webSearchEnabled
+						bind:atSelectedModel
+						transparentBackground={$settings?.backgroundImageUrl ?? false}
+						toolServers={$toolServers}
+						{stopResponse}
+						{createMessagePair}
+						on:upload={async (e) => {
+							const { type, data } = e.detail;
 
-										if (type === 'web') {
-											await uploadWeb(data);
-										} else if (type === 'youtube') {
-											await uploadYoutubeTranscription(data);
-										}
-									}}
-									on:submit={async (e) => {
-										if (e.detail || files.length > 0) {
-											await tick();
-											submitPrompt(
-												($settings?.richTextInput ?? true)
-													? e.detail.replaceAll('\n\n', '\n')
-													: e.detail
-											);
-										}
-									}}
-								/>
-							</div>
-						{/if}
+							if (type === 'web') {
+								await uploadWeb(data);
+							} else if (type === 'youtube') {
+								await uploadYoutubeTranscription(data);
+							}
+						}}
+						on:submit={async (e) => {
+							if (e.detail || files.length > 0) {
+								await tick();
+								submitPrompt(
+									($settings?.richTextInput ?? true)
+										? e.detail.replaceAll('\n\n', '\n')
+										: e.detail
+								);
+							}
+						}}
+					/>
+				</div>
+			{/if}
 					</div>
 				</Pane>
 
@@ -2230,3 +2230,10 @@ let forceBotB = false;
 		</div>
 	{/if}
 </div>
+
+{#if createMessagesList(history, history.currentId).length > 0}
+	<MessageCounter
+		{history}
+		maxTurns={10}
+	/>
+{/if}

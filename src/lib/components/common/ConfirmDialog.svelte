@@ -66,10 +66,8 @@
         // Modellnamen extrahieren
         const match = message.match(/\[\[AUTOSWITCH_BOT_B:([^\]]+)\]\]/);
 
-        let nextModel = 'gemma3:12b'; // Fallback
-        if (match) {
-            nextModel = match[1];
-        }
+        let nextModel = match ? match[1].trim() : 'gemma3:12b-it-qat';
+        
         // Event an Elternkomponente/Chat schicken!
         dispatch('autoswitch', { nextModel });
     }
