@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { settings, playingNotificationSound, isLastActiveTab } from '$lib/stores';
+	import { settings, playingNotificationSound, isLastActiveTab, user} from '$lib/stores';
 	import DOMPurify from 'dompurify';
 
 	import { marked } from 'marked';
@@ -30,6 +30,7 @@
 	});
 </script>
 
+{#if $user?.role === 'admin'}
 <button
 	class="flex gap-2.5 text-left min-w-[var(--width)] w-full dark:bg-gray-850 dark:text-white bg-white text-black border border-gray-100 dark:border-gray-850 rounded-xl px-3.5 py-3.5"
 	on:click={() => {
@@ -51,3 +52,4 @@
 		</div>
 	</div>
 </button>
+{/if}

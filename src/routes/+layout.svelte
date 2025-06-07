@@ -271,17 +271,17 @@
 				const { done, content, title } = data;
 
 				if (done) {
-					if ($settings?.notificationSoundAlways ?? false) {
+					// Spiele Sound nur für Admins ab
+					if ($user?.role === 'admin' && ($settings?.notificationSoundAlways ?? false)) {
 						playingNotificationSound.set(true);
-
 						const audio = new Audio(`/audio/notification.mp3`);
 						audio.play().finally(() => {
-							// Ensure the global state is reset after the sound finishes
 							playingNotificationSound.set(false);
 						});
 					}
 
-					if ($isLastActiveTab) {
+					// Browser-Benachrichtigung nur für Admins
+					if ($isLastActiveTab && $user?.role === 'admin') {
 						if ($settings?.notificationEnabled ?? false) {
 							new Notification(`${title} • Open WebUI`, {
 								body: content,
@@ -290,17 +290,20 @@
 						}
 					}
 
-					toast.custom(NotificationToast, {
-						componentProps: {
-							onClick: () => {
-								goto(`/c/${event.chat_id}`);
+					// Toast-Benachrichtigung nur für Admins
+					if ($user?.role === 'admin') {
+						toast.custom(NotificationToast, {
+							componentProps: {
+								onClick: () => {
+									goto(`/c/${event.chat_id}`);
+								},
+								content: content,
+								title: title
 							},
-							content: content,
-							title: title
-						},
-						duration: 15000,
-						unstyled: true
-					});
+							duration: 15000,
+							unstyled: true
+						});
+					}
 				}
 			} else if (type === 'chat:title') {
 				currentChatPage.set(1);

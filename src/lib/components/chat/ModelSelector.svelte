@@ -32,6 +32,7 @@
 	}
 </script>
 
+{#if $user?.role === 'admin'}
 <div class="flex flex-col w-full items-start">
 	{#each selectedModels as selectedModel, selectedModelIdx}
 		<div class="flex w-full max-w-fit">
@@ -112,11 +113,14 @@
 		</div>
 	{/each}
 </div>
+{/if}
 
+{#if $user?.role === 'admin'}
 {#if showSetDefault}
 	<div
 		class="absolute text-left mt-[1px] ml-1 text-[0.7rem] text-gray-600 dark:text-gray-400 font-primary"
 	>
 		<button on:click={saveDefaultModel}> {$i18n.t('Set as default')}</button>
 	</div>
+{/if}
 {/if}

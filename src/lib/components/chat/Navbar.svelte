@@ -47,6 +47,7 @@
 
 <ShareChatModal bind:show={showShareChatModal} chatId={$chatId} />
 
+{#if $user?.role === 'admin'}
 <nav class="sticky top-0 z-30 w-full py-1 -mb-8 flex flex-col items-center drag-region">
 	<div class="flex items-center w-full pl-1.5 pr-1">
 		<div
@@ -232,3 +233,4 @@
 		</div>
 	{/if}
 </nav>
+{/if}

@@ -28,6 +28,7 @@
 
 <ShortcutsModal bind:show={showShortcuts} />
 
+{#if $user?.role === 'admin'}
 <DropdownMenu.Root
 	bind:open={show}
 	onOpenChange={(state) => {
@@ -271,3 +272,4 @@
 		</DropdownMenu.Content>
 	</slot>
 </DropdownMenu.Root>
+{/if}

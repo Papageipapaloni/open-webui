@@ -44,6 +44,8 @@
 
 <ShareChatModal bind:show={showShareChatModal} chatId={$chatId} />
 
+
+{#if $user?.role === 'admin'}
 <div class="sticky top-0 z-30 w-full px-1.5 py-1.5 -mb-8 flex items-center">
 	<div
 		class=" bg-linear-to-b via-50% from-white via-white to-transparent dark:from-gray-900 dark:via-gray-900 dark:to-transparent pointer-events-none absolute inset-0 -bottom-7 z-[-1]"
@@ -194,3 +196,4 @@
 		</div>
 	</div>
 </div>
+{/if}

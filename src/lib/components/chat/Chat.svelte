@@ -499,6 +499,38 @@
 		chatInput?.focus();
 
 		chats.subscribe(() => {});
+
+		// Nach dem Laden der Models sicherstellen, dass ein Modell ausgewählt ist
+		const initializeDefaultModels = () => {
+			if (selectedModels.length === 0 || (selectedModels.length === 1 && selectedModels[0] === '')) {
+				// Versuche default_models aus config zu verwenden
+				if ($config?.default_models) {
+					selectedModels = $config.default_models.split(',').filter(id => id);
+				} 
+				// Wenn keine default_models oder leere Liste, nimm das erste verfügbare Modell
+				if (selectedModels.length === 0 || (selectedModels.length === 1 && selectedModels[0] === '')) {
+					const availableModel = $models.find(m => !m?.info?.meta?.hidden);
+					if (availableModel) {
+						selectedModels = [availableModel.id];
+						console.log("Automatically selected model:", availableModel.id);
+					}
+				}
+			}
+		};
+
+		// Führe die Initialisierung sofort und auch nach Änderung der Models-Liste aus
+		const unsubscribe = models.subscribe(() => {
+			if ($models.length > 0) {
+				initializeDefaultModels();
+			}
+		});
+		
+		initializeDefaultModels();
+		
+		return () => {
+			unsubscribe();
+			// Restlicher cleanup code...
+		};
 	});
 
 	onDestroy(() => {
