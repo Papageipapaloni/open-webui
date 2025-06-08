@@ -1349,11 +1349,10 @@
 		console.log('submitPrompt', userPrompt, $chatId);
 
 		const messages = createMessagesList(history, history.currentId);
-		const _selectedModels = selectedModels.map((modelId) =>
-			$models.map((m) => m.id).includes(modelId) ? modelId : ''
-		);
-		if (JSON.stringify(selectedModels) !== JSON.stringify(_selectedModels)) {
-			selectedModels = _selectedModels;
+		// Hier: Speichere die allererste Nachricht für Bot B
+		if (messages.length === 0) {
+			localStorage.setItem('firstUserMessage', userPrompt);
+			console.log("Erste Nachricht gespeichert:", userPrompt);
 		}
 
 		if (userPrompt === '' && files.length === 0) {
@@ -2046,12 +2045,36 @@
   on:cancel={() => {
     eventCallback(false);
   }}
-  on:autoswitch={(e) => {
-    const nextModel = e.detail?.nextModel ?? "gemma3:12b";
-
-    sessionStorage.selectedModels = JSON.stringify([nextModel]);
-
-    initNewChat();
+  on:autoswitch={async (e) => {
+    try {
+        // Bot B Modell
+        const nextModel = e.detail?.nextModel ?? "gemma3:12b";
+        console.log("Autoswitch zu Modell:", nextModel);
+        
+        // Hole die erste Nachricht
+        const firstMessage = localStorage.getItem('firstUserMessage');
+        console.log("Gespeicherte erste Nachricht:", firstMessage);
+        
+        // Modell für neuen Chat setzen
+        sessionStorage.selectedModels = JSON.stringify([nextModel]);
+        
+        // Neuen Chat starten
+        await initNewChat();
+        await tick();
+        
+        // Warte kurz, bis der Chat vollständig initialisiert ist
+        setTimeout(async () => {
+            // Wenn wir eine gespeicherte Nachricht haben
+            if (firstMessage) {
+                console.log("Sende erste Nachricht an neues Modell:", firstMessage);
+                await submitPrompt(firstMessage);
+            } else {
+                console.warn("Keine erste Nachricht gefunden!");
+            }
+        }, 500);
+    } catch (error) {
+        console.error("Fehler beim Bot-Wechsel:", error);
+    }
 }}
 />
 
@@ -2086,9 +2109,9 @@
 								title: $chatTitle,
 								models: selectedModels,
 								system: $settings.system ?? undefined,
-								params: params,
-								history: history,
-								timestamp: Date.now()
+							 params: params,
+							 history: history,
+							 timestamp: Date.now()
 							}
 						}}
 						{history}

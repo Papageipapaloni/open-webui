@@ -269,10 +269,10 @@
     <div class="section">
       <h3>Anmeldung</h3>
       <p>
-        Um fortzufahren, musst du dich erst registrieren. Du musst <strong>KEINE</strong> echte E-Mail-Adresse und <strong>NICHT</strong> deinen echten Namen verwenden! 
+        Um fortzufahren, müssen Sie sich bitte zunächst registrieren. Bitte geben Sie <strong>KEINE</strong> echte E-Mail-Adresse und <strong>NICHT</strong> Ihren echten Namen an! Es funktionieren erfundene E-Mail-Adressen wie z.&nbsp;B. <strong>anonym@anonym.de</strong>.
       </p>
       <p> 
-        <span class="blue-highlight">Alle deine Daten sind sicher und anonym! Die Teilnahme erfolgt vollständig anonym!</span>
+        <span class="blue-highlight">Die gesamte Datenverarbeitung erfolgt ausschließlich lokal auf einem privaten Server – ohne externe Dienste oder Drittanbieter. Alle Ihre Daten sind sicher und anonym! Die Teilnahme erfolgt vollständig anonym!</span>
       </p>
     </div>
     
@@ -280,40 +280,44 @@
       <h3>Ablauf der Studie</h3>
       <ol class="numbered-list">
         <li>
-          Nach der Regestrierung/ Anmeldung siehst du ein Chatfenster, in dem du mit der ersten KI <span class="highlight">"Bot A"</span> sprechen kannst.
+          Nach der Registrierung/Anmeldung sehen Sie ein Chatfenster, in dem Sie mit der ersten KI <span class="highlight">"Bot A"</span> schreiben können.
         </li>
 
         <div class="important-note">
-          <strong>Wichtig:</strong> Beide KIs können <strong>nur</strong> auf <strong>Englisch</strong> kommunizieren, schreibe also deine Nachrichten bitte nur auf Englisch.
+          <strong>Wichtig:</strong> Beide KIs können <strong>nur</strong> auf <strong>Englisch</strong> kommunizieren. Schreiben Sie Ihre Nachrichten daher bitte ausschließlich auf Englisch.
         </div>
         
         <li>
-          Schreibe mit <span class="highlight">"Bot A"</span> über ein psychotherapeutisches Thema deiner Wahl.
+          Schreiben Sie nun bitte mit <span class="highlight">"Bot A"</span> über ein psychotherapeutisches Thema Ihrer Wahl.
           <div class="examples">
-            Beispielsweise: "I feel sad" oder "I'm anxious about my exams"
+            Zum Beispiel: "I feel sad" oder "I'm anxious about my exams".
           </div>
         </li>
         
         <li>
-          Bitte schreibe <span class="highlight">30 Nachrichten</span> - sobald du diese erreicht hast, wirst du automatisch von  <span class="highlight">"Bot A"</span> zu <span class="highlight">"Bot B"</span> weitergeleitet.
+          Bitte schreiben Sie <span class="highlight">30 Nachrichten</span>. Sobald Sie diese Anzahl erreicht haben, werden Sie automatisch von <span class="highlight">"Bot A"</span> zu <span class="highlight">"Bot B"</span> weitergeleitet.
         </li>
         
         <li>
-          Schreibe auch mit <span class="highlight">"Bot B"</span> über ein psychotherapeutisches Thema deiner Wahl.
+          Schreiben Sie auch mit <span class="highlight">"Bot B"</span> über das <strong>gleiche</strong> psychotherapeutische Thema wie zuvor mit <span class="highlight">"Bot A"</span>. Zur besseren Vergleichbarkeit wird Ihre erste Nachricht an <span class="highlight">"Bot B"</span> automatisch aus der ersten Nachricht, die Sie an <span class="highlight">"Bot A"</span> geschrieben haben, kopiert.
         </li>
         
         <li>
-          Nach <span class="highlight">30 Nachrichten</span> mit Bot B wirst du automatisch zu einer <span class="highlight">Umfrage</span> weitergeleitet. Fülle diese bitte <span class="highlight">vollständig</span> bis zum Ende aus.
+          Nach <span class="highlight">30 Nachrichten</span> mit Bot B werden Sie automatisch zu einer <span class="highlight">Umfrage</span> weitergeleitet. Bitte füllen Sie diese <span class="highlight">vollständig</span> bis zum Ende aus.
         </li>
       </ol>
       
       <div class="blue-highlight">
-        <strong>Hinweis zur Ladedauer:</strong>  Bitte habe etwas Geduld, solange die KI eine Antwort generiert. Bei der Erzeugung der Antworten kann es manchmal zu kurzen Wartezeiten kommen.
+        <strong>Hinweis zur Ladedauer:</strong> Bitte haben Sie etwas Geduld, während die KI eine Antwort generiert. Bei der Erzeugung der Antworten kann es gelegentlich zu kurzen Wartezeiten kommen.
       </div>
-    </div>
+
+      <div class="important-note">
+        <strong>Wichtig:</strong> Diese KI ist <strong>kein</strong> medizinischer oder psychotherapeutischer Service und kann falsche oder schädliche Ratschläge geben. In <strong>Notfällen</strong> wenden Sie sich bitte an Fachleute unter: <strong>116117, 0800&nbsp;1110111 (Telefonseelsorge)</strong> oder an <strong>112</strong>. Nutzung auf eigene Gefahr!
+      </div>
     
     <div class="modal-footer">
       <button on:click={close}>Verstanden</button>
     </div>
   </div>
+</div>
 </div>
