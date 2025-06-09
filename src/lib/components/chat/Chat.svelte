@@ -1053,8 +1053,8 @@
 					models: selectedModels,
 					messages: messages,
 					history: history,
-					params: params,
-					files: chatFiles
+				 params: params,
+				 files: chatFiles
 				});
 
 				currentChatPage.set(1);
@@ -1349,12 +1349,22 @@
 		console.log('submitPrompt', userPrompt, $chatId);
 
 		const messages = createMessagesList(history, history.currentId);
-		// Hier: Speichere die allererste Nachricht für Bot B
-		if (messages.length === 0) {
-			localStorage.setItem('firstUserMessage', userPrompt);
-			console.log("Erste Nachricht gespeichert:", userPrompt);
-		}
-
+		
+		// Wieder Modell-Validierung einführen
+		const _selectedModels = selectedModels.map((modelId) =>
+        $models.map((m) => m.id).includes(modelId) ? modelId : ''
+    );
+    if (JSON.stringify(selectedModels) !== JSON.stringify(_selectedModels)) {
+        selectedModels = _selectedModels;
+    }
+    
+    // Speichere erste Nachricht für Bot B (behalten)
+    if (messages.length === 0) {
+        localStorage.setItem('firstUserMessage', userPrompt);
+        console.log("Erste Nachricht gespeichert:", userPrompt);
+    }
+    
+    // Rest der Funktion...
 		if (userPrompt === '' && files.length === 0) {
 			toast.error($i18n.t('Please enter a prompt'));
 			return;
@@ -1715,10 +1725,11 @@
 						messages.at(1)?.role === 'user')) &&
 				(selectedModels[0] === model.id || atSelectedModel !== undefined)
 					? {
-							background_tasks: {
-								title_generation: $settings?.title?.auto ?? true,
-								tags_generation: $settings?.autoTags ?? true
-							}
+							background_tasks:
+								{
+									title_generation: $settings?.title?.auto ?? true,
+									tags_generation: $settings?.autoTags ?? true
+								}
 						}
 					: {}),
 
@@ -1983,20 +1994,39 @@
 	};
 
 	const saveChatHandler = async (_chatId, history) => {
-		if ($chatId == _chatId) {
-			if (!$temporaryChatEnabled) {
-				chat = await updateChatById(localStorage.token, _chatId, {
-					models: selectedModels,
-					history: history,
-					messages: createMessagesList(history, history.currentId),
-					params: params,
-					files: chatFiles
-				});
-				currentChatPage.set(1);
-				await chats.set(await getChatList(localStorage.token, $currentChatPage));
-			}
-		}
-	};
+    if ($chatId == _chatId) {
+        if (!$temporaryChatEnabled) {
+            try {
+                // Struktur für die Datenbank vorbereiten und bereinigen
+                const cleanedHistory = JSON.parse(JSON.stringify(history));
+                
+                // Lokale/temporäre Felder entfernen
+                for (const messageId in cleanedHistory.messages) {
+                    const message = cleanedHistory.messages[messageId];
+                    // Entferne temporäre Felder
+                    if (message.lastSentence) delete message.lastSentence;
+                    // Stelle sicher, dass models immer ein Array ist
+                    if (message.models && !Array.isArray(message.models)) {
+                        message.models = [message.models];
+                    }
+                }
+                
+                chat = await updateChatById(localStorage.token, _chatId, {
+                    models: selectedModels,
+                    history: cleanedHistory,
+                    messages: createMessagesList(history, history.currentId),
+                    params: params,
+                    files: chatFiles
+                });
+                
+                currentChatPage.set(1);
+                await chats.set(await getChatList(localStorage.token, $currentChatPage));
+            } catch (error) {
+                console.error("Fehler beim Chat-Speichern:", error);
+            }
+        }
+    }
+};
 </script>
 
 <svelte:head>

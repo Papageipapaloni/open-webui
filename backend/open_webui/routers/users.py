@@ -110,7 +110,7 @@ class SharingPermissions(BaseModel):
 
 
 class ChatPermissions(BaseModel):
-    controls: bool = False
+    controls: bool = True
     file_upload: bool = True
     delete: bool = True
     edit: bool = True

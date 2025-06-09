@@ -274,7 +274,13 @@
 	let touchstart;
 	let touchend;
 
+	// Modifizieren der checkDirection-Funktion, um Swipe-Gesten nur für Admins zu erlauben
 	function checkDirection() {
+		// Wenn der Benutzer kein Admin ist, keine Sidebar-Aktionen erlauben
+		if ($user?.role !== 'admin') {
+			return;
+		}
+		
 		const screenWidth = window.innerWidth;
 		const swipeDistance = Math.abs(touchend.screenX - touchstart.screenX);
 		if (touchstart.clientX < 40 && swipeDistance >= screenWidth / 8) {
@@ -320,6 +326,12 @@
 		showPinnedChat = localStorage?.showPinnedChat ? localStorage.showPinnedChat === 'true' : true;
 
 		mobile.subscribe((value) => {
+			// Nur für Admins die Sidebar anzeigen, für alle anderen immer versteckt halten
+			if ($user?.role !== 'admin') {
+				showSidebar.set(false);
+				return;
+			}
+			
 			if ($showSidebar && value) {
 				showSidebar.set(false);
 			}
@@ -331,13 +343,21 @@
 				}
 			}
 
-			if (!$showSidebar && !value) {
+			if (!$showSidebar && !value && $user?.role === 'admin') {
 				showSidebar.set(true);
 			}
 		});
 
-		showSidebar.set(!$mobile ? localStorage.sidebar === 'true' : false);
+		// Sidebar nur für Admins sichtbar machen
+		showSidebar.set($user?.role === 'admin' && !$mobile ? localStorage.sidebar === 'true' : false);
+		
 		showSidebar.subscribe((value) => {
+			// Immer auf false setzen für Nicht-Admins
+			if ($user?.role !== 'admin' && value) {
+				showSidebar.set(false);
+				return;
+			}
+			
 			localStorage.sidebar = value;
 
 			// nav element is not available on the first render
@@ -362,8 +382,11 @@
 		window.addEventListener('keydown', onKeyDown);
 		window.addEventListener('keyup', onKeyUp);
 
-		window.addEventListener('touchstart', onTouchStart);
-		window.addEventListener('touchend', onTouchEnd);
+		// Nur für Admins Touch-Events hinzufügen
+		if ($user?.role === 'admin') {
+			window.addEventListener('touchstart', onTouchStart);
+			window.addEventListener('touchend', onTouchEnd);
+		}
 
 		window.addEventListener('focus', onFocus);
 		window.addEventListener('blur', onBlur);
@@ -379,8 +402,11 @@
 		window.removeEventListener('keydown', onKeyDown);
 		window.removeEventListener('keyup', onKeyUp);
 
-		window.removeEventListener('touchstart', onTouchStart);
-		window.removeEventListener('touchend', onTouchEnd);
+		// Nur für Admins Touch-Events entfernen
+		if ($user?.role === 'admin') {
+			window.removeEventListener('touchstart', onTouchStart);
+			window.removeEventListener('touchend', onTouchEnd);
+		}
 
 		window.removeEventListener('focus', onFocus);
 		window.removeEventListener('blur', onBlur);
@@ -419,23 +445,41 @@
 	}}
 />
 
-{#if $user?.role === 'admin'}      <!-- nur Admins sehen die Sidebar -->
-  {#if $showSidebar}               <!-- Overlay fürs mobile -->
-    <div class="fixed md:hidden z-40 inset-0 bg-black/60" on:mousedown={() => showSidebar.set(false)}/>
-  {/if}
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+{#if $user?.role === 'admin'}
+	{#if $showSidebar}
+		<div
+			class=" {$isApp
+				? ' ml-[4.5rem] md:ml-0'
+				: ''} fixed md:hidden z-40 top-0 right-0 left-0 bottom-0 bg-black/60 w-full min-h-screen h-screen flex justify-center overflow-hidden overscroll-contain"
+			on:mousedown={() => {
+				showSidebar.set(!$showSidebar);
+			}}
+		/>
+	{/if}
+{/if}
 
-  <div
-    bind:this={navElement}
-    id="sidebar"
-    class="
-      h-screen max-h-[100dvh] select-none
-      {$showSidebar ? 'md:relative w-[260px]' : '-translate-x-[260px] w-0'}
-      transition-width duration-200 ease-in-out
-      fixed z-50 top-0 left-0 bg-gray-50 dark:bg-gray-950 overflow-hidden
-    "
-    data-state={$showSidebar}
-  >
-    <div
+<SearchModal
+	bind:show={$showSearch}
+	onClose={() => {
+		if ($mobile) {
+			showSidebar.set(false);
+		}
+	}}
+/>
+
+<div
+	bind:this={navElement}
+	id="sidebar"
+	class="h-screen max-h-[100dvh] min-h-screen select-none {$showSidebar
+		? 'md:relative w-[260px] max-w-[260px]'
+		: '-translate-x-[260px] w-[0px]'} {$isApp
+		? `ml-[4.5rem] md:ml-0 `
+		: 'transition-width duration-200 ease-in-out'}  shrink-0 bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-200 text-sm fixed z-50 top-0 left-0 overflow-x-hidden
+        "
+	data-state={$showSidebar}
+>
+	<div
 		class="py-2 my-auto flex flex-col justify-between h-screen max-h-[100dvh] w-[260px] overflow-x-hidden z-50 {$showSidebar
 			? ''
 			: 'invisible'}"
@@ -465,42 +509,42 @@
 				</div>
 			</button>
 
-				<a
-					id="sidebar-new-chat-button"
-					class="flex justify-between items-center flex-1 rounded-lg px-2 py-1 h-full text-right hover:bg-gray-100 dark:hover:bg-gray-900 transition no-drag-region"
-					href="/"
-					draggable="false"
-					on:click={async () => {
-						selectedChatId = null;
-						await goto('/');
-						const newChatButton = document.getElementById('new-chat-button');
-						setTimeout(() => {
-							newChatButton?.click();
-							if ($mobile) {
-								showSidebar.set(false);
-							}
-						}, 0);
-					}}
-				>
-					<div class="flex items-center">
-						<div class="self-center mx-1.5">
-							<img
-								crossorigin="anonymous"
-								src="{WEBUI_BASE_URL}/static/favicon.png"
-								class=" size-5 -translate-x-1.5 rounded-full"
-								alt="logo"
-							/>
-						</div>
-						<div class=" self-center font-medium text-sm text-gray-850 dark:text-white font-primary">
-							{$i18n.t('New Chat')}
-						</div>
+			<a
+				id="sidebar-new-chat-button"
+				class="flex justify-between items-center flex-1 rounded-lg px-2 py-1 h-full text-right hover:bg-gray-100 dark:hover:bg-gray-900 transition no-drag-region"
+				href="/"
+				draggable="false"
+				on:click={async () => {
+					selectedChatId = null;
+					await goto('/');
+					const newChatButton = document.getElementById('new-chat-button');
+					setTimeout(() => {
+						newChatButton?.click();
+						if ($mobile) {
+							showSidebar.set(false);
+						}
+					}, 0);
+				}}
+			>
+				<div class="flex items-center">
+					<div class="self-center mx-1.5">
+						<img
+							crossorigin="anonymous"
+							src="{WEBUI_BASE_URL}/static/favicon.png"
+							class=" size-5 -translate-x-1.5 rounded-full"
+							alt="logo"
+						/>
 					</div>
+					<div class=" self-center font-medium text-sm text-gray-850 dark:text-white font-primary">
+						{$i18n.t('New Chat')}
+					</div>
+				</div>
 
-					<div>
-						<PencilSquare className=" size-5" strokeWidth="2" />
-					</div>
-				</a>
-         </div>
+				<div>
+					<PencilSquare className=" size-5" strokeWidth="2" />
+				</div>
+			</a>
+		</div>
 
 		<!-- {#if $user?.role === 'admin'}
 			<div class="px-1.5 flex justify-center text-gray-800 dark:text-gray-200">
@@ -925,7 +969,6 @@
 		</div>
 	</div>
 </div>
-{/if}
 
 <style>
 	.scrollbar-hidden:active::-webkit-scrollbar-thumb,
