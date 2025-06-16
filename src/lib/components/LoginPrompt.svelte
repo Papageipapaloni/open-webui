@@ -210,7 +210,7 @@
     .modal h3 {
       color: #edf2f4;
     }
-    .modal p {
+    .modal p, .modal li {
       color: #cbd5e0;
     }
     .modal .highlight {
@@ -236,6 +236,16 @@
     
     .blue-highlight {
       color: #3b82f6; /* Etwas helleres Blau für besseren Kontrast im Dark Mode */
+    }
+    
+    /* Fix for numbered list items in dark mode */
+    .numbered-list li:before {
+      color: #3b82f6;
+    }
+    
+    /* Fix for feature list items in dark mode */
+    .feature-list li:before {
+      color: #3b82f6;
     }
   }
   
@@ -295,7 +305,7 @@
         </li>
         
         <li>
-          Bitte schreiben Sie <span class="highlight">30 Nachrichten</span>. Sobald Sie diese Anzahl erreicht haben, werden Sie automatisch von <span class="highlight">"Bot A"</span> zu <span class="highlight">"Bot B"</span> weitergeleitet.
+          Bitte schreiben Sie <span class="highlight">15 Nachrichten</span>. Sobald Sie diese Anzahl erreicht haben, werden Sie automatisch von <span class="highlight">"Bot A"</span> zu <span class="highlight">"Bot B"</span> weitergeleitet.
         </li>
         
         <li>
@@ -303,7 +313,7 @@
         </li>
         
         <li>
-          Nach <span class="highlight">30 Nachrichten</span> mit Bot B werden Sie automatisch zu einer <span class="highlight">Umfrage</span> weitergeleitet. Bitte füllen Sie diese <span class="highlight">vollständig</span> bis zum Ende aus.
+          Nach <span class="highlight">15 Nachrichten</span> mit Bot B werden Sie automatisch zu einer <span class="highlight">Umfrage</span> weitergeleitet. Bitte füllen Sie diese <span class="highlight">vollständig</span> bis zum Ende aus.
         </li>
       </ol>
       
@@ -312,7 +322,7 @@
       </div>
 
       <div class="important-note">
-        <strong>Wichtig:</strong> Diese KI ist <strong>kein</strong> medizinischer oder psychotherapeutischer Service und kann falsche oder schädliche Ratschläge geben. In <strong>Notfällen</strong> wenden Sie sich bitte an Fachleute unter: <strong>116117, 0800&nbsp;1110111 (Telefonseelsorge)</strong> oder an <strong>112</strong>. Nutzung auf eigene Gefahr!
+        <strong>Wichtig:</strong> Diese KI ist <strong>kein</strong> medizinischer oder psychotherapeutischer Service und kann falsche oder schädliche Ratschläge geben. In <strong>Notfällen</strong> wenden Sie sich bitte an Fachleute unter: <strong>116117, 0800&nbsp;1110111 (Telefonseelsorge)</strong> oder an <strong>112</strong>.
       </div>
     
     <div class="modal-footer">
