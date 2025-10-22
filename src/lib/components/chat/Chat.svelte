@@ -2319,6 +2319,6 @@
 {#if createMessagesList(history, history.currentId).length > 0}
 	<MessageCounter
 		{history}
-		maxTurns={10}
+		maxTurns={13}
 	/>
 {/if}

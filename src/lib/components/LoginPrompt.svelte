@@ -4,9 +4,12 @@
   import { browser } from '$app/environment';
   
   const dispatch = createEventDispatcher();
+  let buttonEnabled = false;
+  let countdown = 30;
+  let timer: ReturnType<typeof setInterval>;
 
   function handleKey(e: KeyboardEvent) {
-    if (e.key === "Escape") {
+    if (e.key === "Escape" && buttonEnabled) {
       dispatch("close");
     }
   }
@@ -14,15 +17,27 @@
   onMount(() => {
     window.addEventListener("keydown", handleKey);
     document.body.style.overflow = "hidden"; // Prevent background scrolling
+    
+    // Start countdown timer
+    timer = setInterval(() => {
+      countdown -= 1;
+      if (countdown <= 0) {
+        clearInterval(timer);
+        buttonEnabled = true;
+      }
+    }, 1000);
   });
   
   onDestroy(() => {
     window.removeEventListener("keydown", handleKey);
     document.body.style.overflow = "";
+    clearInterval(timer);
   });
 
   function close() {
-    dispatch("close");
+    if (buttonEnabled) {
+      dispatch("close");
+    }
   }
 </script>
 
@@ -77,23 +92,15 @@
       font-size: 1rem;
     }
     
-    /* Sticky Footer für bessere UX */
+    /* Entferne den sticky Footer, damit Button nur am Ende sichtbar ist */
     .modal-footer {
-      position: sticky;
-      bottom: -1.5rem;
-      background-color: white;
+      position: relative; /* Ändern von sticky zu relative */
+      bottom: auto;
+      background-color: transparent;
       padding-top: 1rem;
-      margin-bottom: -1.5rem;
-      padding-bottom: 1.5rem;
+      margin-bottom: 0;
+      padding-bottom: 0;
       border-top: 1px solid #e5e7eb;
-    }
-    
-    /* Dunkel-Modus-Unterstützung für Sticky Footer */
-    @media (prefers-color-scheme: dark) {
-      .modal-footer {
-        background-color: #1a202c;
-        border-top-color: #2d3748;
-      }
     }
   }
   
@@ -143,6 +150,11 @@
   }
   .modal button:hover {
     background-color: #1d4ed8;
+  }
+  .modal button:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.7;
   }
   .modal-footer {
     display: flex;
@@ -234,6 +246,10 @@
       background-color: #4338ca;
     }
     
+    .modal button:disabled {
+      background-color: #4b5563;
+    }
+    
     .blue-highlight {
       color: #3b82f6; /* Etwas helleres Blau für besseren Kontrast im Dark Mode */
     }
@@ -294,18 +310,18 @@
         </li>
 
         <div class="important-note">
-          <strong>Wichtig:</strong> Beide KIs können <strong>nur</strong> auf <strong>Englisch</strong> kommunizieren. Schreiben Sie Ihre Nachrichten daher bitte ausschließlich auf Englisch.
+          <strong>Wichtig:</strong> Beide KIs können <strong>nur</strong> auf <strong>Englisch</strong> kommunizieren. Schreiben Sie Ihre Nachrichten daher bitte ausschließlich auf Englisch!!
         </div>
         
         <li>
-          Schreiben Sie nun bitte mit <span class="highlight">"Bot A"</span> über ein psychotherapeutisches Thema Ihrer Wahl.
+          Schreiben Sie nun bitte mit <span class="highlight">"Bot A"</span> über ein <strong>psychotherapeutisches Thema</strong> Ihrer Wahl. Es sollte idealerweise ein Problem oder etwas sein, was Sie aktuell oder in der Vergangenheit belastet hat.
           <div class="examples">
             Zum Beispiel: "I feel sad" oder "I'm anxious about my exams".
           </div>
         </li>
         
         <li>
-          Bitte schreiben Sie <span class="highlight">15 Nachrichten</span>. Sobald Sie diese Anzahl erreicht haben, werden Sie automatisch von <span class="highlight">"Bot A"</span> zu <span class="highlight">"Bot B"</span> weitergeleitet.
+          Bitte schreiben Sie <span class="highlight">13 Nachrichten</span>. Sobald Sie diese Anzahl erreicht haben, werden Sie automatisch von <span class="highlight">"Bot A"</span> zu <span class="highlight">"Bot B"</span> weitergeleitet.
         </li>
         
         <li>
@@ -313,9 +329,13 @@
         </li>
         
         <li>
-          Nach <span class="highlight">15 Nachrichten</span> mit Bot B werden Sie automatisch zu einer <span class="highlight">Umfrage</span> weitergeleitet. Bitte füllen Sie diese <span class="highlight">vollständig</span> bis zum Ende aus.
+          Nach <span class="highlight">13 Nachrichten</span> mit Bot B werden Sie automatisch zu einer <span class="highlight">Umfrage</span> weitergeleitet. Bitte füllen Sie diese <span class="highlight">vollständig</span> bis zum Ende aus.
         </li>
       </ol>
+      
+      <div class="important-note">
+        <strong>Wichtig:</strong> Komplette Studie in <strong>einem Durchgang</strong> bearbeiten! Seite nicht schließen, nicht im Browser zurück drücken und nicht unterbrechen bis zum <strong>vollständigen</strong> Ausfüllen der Abschlussumfrage!
+      </div>
       
       <div class="blue-highlight">
         <strong>Hinweis zur Ladedauer:</strong> Bitte haben Sie etwas Geduld, während die KI eine Antwort generiert. Bei der Erzeugung der Antworten kann es gelegentlich zu kurzen Wartezeiten kommen.
@@ -324,10 +344,13 @@
       <div class="important-note">
         <strong>Wichtig:</strong> Diese KI ist <strong>kein</strong> medizinischer oder psychotherapeutischer Service und kann falsche oder schädliche Ratschläge geben. In <strong>Notfällen</strong> wenden Sie sich bitte an Fachleute unter: <strong>116117, 0800&nbsp;1110111 (Telefonseelsorge)</strong> oder an <strong>112</strong>.
       </div>
+    </div>
     
     <div class="modal-footer">
-      <button on:click={close}>Verstanden</button>
+      <button on:click={close} disabled={!buttonEnabled}>
+        {buttonEnabled ? 'Verstanden' : `Bitte Anleitung lesen (${countdown}s)...`}
+      </button>
     </div>
   </div>
 </div>
-</div>
+
